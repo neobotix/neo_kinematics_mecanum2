@@ -56,7 +56,7 @@ public:
 	topicPub_DriveCommands = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("/drives/joint_trajectory", 1000);
 	topicSub_ComVel = this->create_subscription<geometry_msgs::msg::Twist>("/cmd_vel", 1, std::bind(&NeoMecanumNode::receiveCmd, this, _1));
 	topicSub_DriveState = this->create_subscription<sensor_msgs::msg::JointState>("/drives/joint_states", 10, std::bind(&NeoMecanumNode::sendOdom, this, _1));
-  odom_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+  	odom_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(this);
 
 	this->get_parameter_or("wheelDiameter", wheelDiameter, 0.3);
 	this->get_parameter_or("robotWidth", axisWidth, 0.5);
@@ -87,7 +87,7 @@ public:
 private:
 	void receiveCmd(const geometry_msgs::msg::Twist::SharedPtr twist)
 	{
-    std::mutex m_node_mutex;
+    	std::mutex m_node_mutex;
 		trajectory_msgs::msg::JointTrajectory traj;
 		kin->execInvKin(twist, traj);
 		topicPub_DriveCommands->publish(traj);
@@ -125,12 +125,12 @@ private:
 
 
 private:
-  std::mutex m_node_mutex;
+	std::mutex m_node_mutex;
 	Mecanum4WKinematics* kin = 0;
 	bool sendTransform = false;
 	
 	rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr topicPub_Odometry;
-  rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr topicPub_DriveCommands;
+  	rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr topicPub_DriveCommands;
 	rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr topicSub_ComVel;
 	rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr topicSub_DriveState;
 	std::shared_ptr<tf2_ros::TransformBroadcaster> odom_broadcaster;
