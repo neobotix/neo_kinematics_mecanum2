@@ -46,8 +46,8 @@
 class Mecanum4WKinematics : public Kinematics {
 public:
 	Mecanum4WKinematics();
-	void execForwKin(const sensor_msgs::msg::JointState::SharedPtr js, nav_msgs::msg::Odometry odom, OdomPose& cpose);
-	void execInvKin(const geometry_msgs::msg::Twist::SharedPtr twist, trajectory_msgs::msg::JointTrajectory traj);
+	void execForwKin(const sensor_msgs::msg::JointState::SharedPtr js, nav_msgs::msg::Odometry &odom, OdomPose& cpose);
+	void execInvKin(const geometry_msgs::msg::Twist::SharedPtr twist, trajectory_msgs::msg::JointTrajectory &traj);
 	/*
 	 robot:	l1: m_dAxis1Length
 		l2: m_dAxis2Length

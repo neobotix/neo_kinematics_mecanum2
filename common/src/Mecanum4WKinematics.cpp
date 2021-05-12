@@ -54,7 +54,7 @@ Mecanum4WKinematics::Mecanum4WKinematics()
 	m_dStdDevYaw = 0.1;
 }
 
-void Mecanum4WKinematics::execForwKin(const sensor_msgs::msg::JointState::SharedPtr js, nav_msgs::msg::Odometry odom, OdomPose& cpose)
+void Mecanum4WKinematics::execForwKin(const sensor_msgs::msg::JointState::SharedPtr js, nav_msgs::msg::Odometry& odom, OdomPose& cpose)
 {
 	current_time = js->header.stamp;
 	geometry_msgs::msg::Quaternion quat_msg;
@@ -137,7 +137,7 @@ void Mecanum4WKinematics::execForwKin(const sensor_msgs::msg::JointState::Shared
 	last_odom = odom;
 }
 
-void Mecanum4WKinematics::execInvKin(const geometry_msgs::msg::Twist::SharedPtr twist, trajectory_msgs::msg::JointTrajectory traj)
+void Mecanum4WKinematics::execInvKin(const geometry_msgs::msg::Twist::SharedPtr twist, trajectory_msgs::msg::JointTrajectory& traj)
 {
 	//make sure that there's no old command in the message.
 	traj.joint_names.clear();
