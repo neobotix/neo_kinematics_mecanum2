@@ -58,6 +58,17 @@ public:
 	topicSub_DriveState = this->create_subscription<sensor_msgs::msg::JointState>("/drives/joint_states", 10, std::bind(&NeoMecanumNode::sendOdom, this, _1));
   	odom_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(this);
 
+	this->declare_parameter("wheelDiameter");
+	this->declare_parameter("robotWidth");
+	this->declare_parameter("robotLength");
+	this->declare_parameter("devX");
+	this->declare_parameter("devY");
+	this->declare_parameter("devZ");
+	this->declare_parameter("devRoll");
+	this->declare_parameter("devPitch");
+	this->declare_parameter("devYaw");
+	this->declare_parameter("sendTransform");
+
 	this->get_parameter_or("wheelDiameter", wheelDiameter, 0.3);
 	this->get_parameter_or("robotWidth", axisWidth, 0.5);
 	this->get_parameter_or("robotLength", axisLength, 0.5);
