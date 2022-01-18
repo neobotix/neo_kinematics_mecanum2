@@ -32,7 +32,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-
 #ifndef neo_kinematics_h_
 #define neo_kinematics_h_
 
@@ -41,7 +40,6 @@
 #include <trajectory_msgs/msg/joint_trajectory.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include "rclcpp/rclcpp.hpp"
-
 
 typedef struct {
 	double xAbs;
@@ -59,6 +57,5 @@ protected:
 	nav_msgs::msg::Odometry last_odom;
 
 };
-
 
 #endif //neo_kinematics_h_

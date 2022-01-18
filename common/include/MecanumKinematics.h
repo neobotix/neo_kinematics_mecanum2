@@ -32,13 +32,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-
 #ifndef neo_diffdrivekinematics_h_
 #define neo_diffdrivekinematics_h_
 
 #include "Kinematics.h"
-#include <geometry_msgs/msg/twist.hpp>
-#include <sensor_msgs/msg/joint_state.hpp>
+#include <geometry_msgs/msg/twist.h>
+#include <sensor_msgs/msg/joint_state.h>
 #include <trajectory_msgs/msg/joint_trajectory.hpp>
 #include <trajectory_msgs/msg/joint_trajectory_point.hpp>
 #include <nav_msgs/msg/odometry.hpp>
