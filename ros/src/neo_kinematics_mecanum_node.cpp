@@ -52,9 +52,9 @@ class NeoMecanumNode: public rclcpp::Node
 public:
 	NeoMecanumNode(): Node("neo_mecanum_node") {
 		topicPub_Odometry = this->create_publisher<nav_msgs::msg::Odometry>("odom", 1000);
-		topicPub_DriveCommands = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("/drives/joint_trajectory", 1000);
-		topicSub_ComVel = this->create_subscription<geometry_msgs::msg::Twist>("/cmd_vel", 1, std::bind(&NeoMecanumNode::receiveCmd, this, _1));
-		topicSub_DriveState = this->create_subscription<sensor_msgs::msg::JointState>("/drives/joint_states", 10, std::bind(&NeoMecanumNode::sendOdom, this, _1));
+		topicPub_DriveCommands = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("drives/joint_trajectory", 1000);
+		topicSub_ComVel = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 1, std::bind(&NeoMecanumNode::receiveCmd, this, _1));
+		topicSub_DriveState = this->create_subscription<sensor_msgs::msg::JointState>("drives/joint_states", 10, std::bind(&NeoMecanumNode::sendOdom, this, _1));
 	  odom_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(this);
 
 	  // Declaring parameters
@@ -125,9 +125,15 @@ private:
 		//odometry transform:
 		if(sendTransform) {
 			geometry_msgs::msg::TransformStamped odom_trans;
-			odom_trans.header.stamp = odom.header.stamp;
-			odom_trans.header.frame_id = odom.header.frame_id;
-			odom_trans.child_frame_id = odom.child_frame_id;
+			std::string robot_namespace(this->get_namespace());
+			odom_trans.header.stamp = js->header.stamp;
+			if (robot_namespace != "/") {
+				odom_trans.header.frame_id = robot_namespace + "odom";
+				odom_trans.child_frame_id = robot_namespace + "base_link";
+			} else {
+				odom_trans.header.frame_id = "odom";
+				odom_trans.child_frame_id = "base_link";
+			}
 			odom_trans.transform.translation.x = odom.pose.pose.position.x;
 			odom_trans.transform.translation.y = odom.pose.pose.position.y;
 			odom_trans.transform.translation.z = odom.pose.pose.position.z;
