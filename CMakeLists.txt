@@ -16,6 +16,7 @@ find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 # ###########
 # ## Build ##
@@ -44,6 +45,7 @@ add_executable(neo_mecanum_node ros/src/neo_kinematics_mecanum_node.cpp)
 ament_target_dependencies(${PROJECT_NAME}
   rclcpp
   tf2_ros
+  tf2_geometry_msgs
   sensor_msgs
   geometry_msgs
   std_msgs
