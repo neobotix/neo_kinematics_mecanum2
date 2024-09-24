@@ -32,8 +32,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#ifndef neo_kinematics_h_
-#define neo_kinematics_h_
+#ifndef KINEMATICS_H_
+#define KINEMATICS_H_
 
 #include <geometry_msgs/msg/twist.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
@@ -41,21 +41,25 @@
 #include <nav_msgs/msg/odometry.hpp>
 #include "rclcpp/rclcpp.hpp"
 
-typedef struct {
-	double xAbs;
-	double yAbs;
-	double phiAbs;
+typedef struct
+{
+  double xAbs;
+  double yAbs;
+  double phiAbs;
 } OdomPose;
 
 class Kinematics {
 public:
-	virtual void execForwKin(const sensor_msgs::msg::JointState::SharedPtr, nav_msgs::msg::Odometry::SharedPtr, OdomPose&) {};
-	virtual void execInvKin(const geometry_msgs::msg::Twist::SharedPtr, trajectory_msgs::msg::JointTrajectory::SharedPtr) {};
+  virtual void execForwKin(
+    const sensor_msgs::msg::JointState::SharedPtr,
+    nav_msgs::msg::Odometry::SharedPtr, OdomPose &) {}
+  virtual void execInvKin(
+    const geometry_msgs::msg::Twist::SharedPtr,
+    trajectory_msgs::msg::JointTrajectory::SharedPtr) {}
 
 protected:
-	rclcpp::Time current_time, last_time;
-	nav_msgs::msg::Odometry last_odom;
-
+  rclcpp::Time current_time, last_time;
+  nav_msgs::msg::Odometry last_odom;
 };
 
-#endif //neo_kinematics_h_
+#endif  // KINEMATICS_H_

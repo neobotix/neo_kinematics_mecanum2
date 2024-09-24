@@ -32,50 +32,58 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#ifndef neo_diffdrivekinematics_h_
-#define neo_diffdrivekinematics_h_
+#ifndef MECANUMKINEMATICS_H_
+#define MECANUMKINEMATICS_H_
 
-#include "Kinematics.h"
-#include <geometry_msgs/msg/twist.h>
-#include <sensor_msgs/msg/joint_state.h>
 #include <trajectory_msgs/msg/joint_trajectory.hpp>
 #include <trajectory_msgs/msg/joint_trajectory_point.hpp>
 #include <nav_msgs/msg/odometry.hpp>
+#include <geometry_msgs/msg/twist.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 
-class Mecanum4WKinematics : public Kinematics {
+#include "Kinematics.h"
+
+
+class Mecanum4WKinematics: public Kinematics {
 public:
-	Mecanum4WKinematics();
-	void execForwKin(const sensor_msgs::msg::JointState::SharedPtr js, nav_msgs::msg::Odometry &odom, OdomPose& cpose);
-	void execInvKin(const geometry_msgs::msg::Twist::SharedPtr twist, trajectory_msgs::msg::JointTrajectory &traj);
-	/*
-	 robot:	l1: m_dAxis1Length
-		l2: m_dAxis2Length
+  Mecanum4WKinematics();
+  void execForwKin(
+    const sensor_msgs::msg::JointState::SharedPtr js, nav_msgs::msg::Odometry & odom,
+    OdomPose & cpose);
+  void execInvKin(
+    const geometry_msgs::msg::Twist::SharedPtr twist,
+    trajectory_msgs::msg::JointTrajectory & traj);
+  /*
+    robot: l1: m_dAxis1Length
+    l2: m_dAxis2Length
 
-	      --|##2##|        |##4##|
-	      ^   ##################
-	  l1  ¦   ##################             ^ y
-	      ¦   ##################             ¦
-	      v   ##################       x     ¦
-	      --|##1##|        |##3##|     <-----¦-
-		   |       l2     |
-		   |<------------>|
-	*/
-	void setAxis1Length(double dLength);
-	void setAxis2Length(double dLength);
-	void setWheelDiameter(double dDiam);
-	void setStdDev(double dStdDevX, double dStdDevY, double dStdDevZ, double dStdDevRoll, double dStdDevPitch, double dStdDevYaw);
+        --|##2##|        |##4##|
+        ^   ##################
+    l1  ¦   ##################             ^ y
+        ¦   ##################             ¦
+        v   ##################       x     ¦
+        --|##1##|        |##3##|     <-----¦-
+      |       l2     |
+      |<------------>|
+  */
+  void setAxis1Length(double dLength);
+  void setAxis2Length(double dLength);
+  void setWheelDiameter(double dDiam);
+  void setStdDev(
+    double dStdDevX, double dStdDevY, double dStdDevZ, double dStdDevRoll,
+    double dStdDevPitch, double dStdDevYaw);
 
 private:
-	double m_dAxis1Length;
-	double m_dAxis2Length;
-	double m_dDiam;
-	double m_dStdDevX;
-	double m_dStdDevY;
-	double m_dStdDevZ;
-	double m_dStdDevRoll;
-	double m_dStdDevPitch;
-	double m_dStdDevYaw;
+  double m_dAxis1Length;
+  double m_dAxis2Length;
+  double m_dDiam;
+  double m_dStdDevX;
+  double m_dStdDevY;
+  double m_dStdDevZ;
+  double m_dStdDevRoll;
+  double m_dStdDevPitch;
+  double m_dStdDevYaw;
 };
 
 
-#endif //neo_diffdrivekinematics_h_
+#endif  // MECANUMKINEMATICS_H_

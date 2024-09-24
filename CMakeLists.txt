@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(neo_kinematics_mecanum)
+project(neo_kinematics_mecanum2)
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
@@ -9,8 +9,6 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclcpp_action REQUIRED)
-find_package(rclcpp_lifecycle REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -28,19 +26,9 @@ ament_export_include_directories(common/include)
 
 add_library(${PROJECT_NAME} common/src/Mecanum4WKinematics.cpp)
 
-
 ament_export_libraries(${PROJECT_NAME})
 
 add_executable(neo_mecanum_node ros/src/neo_kinematics_mecanum_node.cpp)
-
-# ament_target_dependencies(neo_mecanum_node
-#   rclcpp
-#   tf2_ros
-#   sensor_msgs
-#   geometry_msgs
-#   std_msgs
-#   nav_msgs
-#   trajectory_msgs)
 
 ament_target_dependencies(${PROJECT_NAME}
   rclcpp
