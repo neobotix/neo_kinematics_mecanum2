@@ -37,7 +37,7 @@
 
 #include "../include/MecanumKinematics.h"
 #include "tf2_ros/transform_broadcaster.h"
-#include "tf2/LinearMath/Quaternion.h"
+#include "geometry_msgs/msg/quaternion.hpp"
 
 Mecanum4WKinematics::Mecanum4WKinematics()
 {

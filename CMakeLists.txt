@@ -15,6 +15,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(neo_msgs2 REQUIRED)
 
 # ###########
 # ## Build ##
@@ -38,6 +39,7 @@ ament_target_dependencies(${PROJECT_NAME}
   geometry_msgs
   std_msgs
   nav_msgs
+  neo_msgs2
   trajectory_msgs)
 
 target_link_libraries(neo_mecanum_node ${PROJECT_NAME})
