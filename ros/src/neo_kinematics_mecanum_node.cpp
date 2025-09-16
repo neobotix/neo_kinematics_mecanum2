@@ -40,9 +40,10 @@
 #include <geometry_msgs/msg/twist.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <nav_msgs/msg/odometry.hpp>
+#include <neo_msgs2/msg/kinematics_state.hpp>
 
-#include "tf2_ros/buffer.h"
-#include "tf2_ros/transform_broadcaster.h"
+#include "tf2_ros/buffer.hpp"
+#include "tf2_ros/transform_broadcaster.hpp"
 #include "../../common/include/Kinematics.h"
 #include "../../common/include/MecanumKinematics.h"
 
@@ -65,6 +66,9 @@ public:
       "drives/joint_states",
       10,
       std::bind(&NeoMecanumNode::sendOdom, this, _1));
+    topicPub_KinematicsState = this->create_publisher<neo_msgs2::msg::KinematicsState>(
+      "kinematics_state",
+      1);
     odom_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(this);
 
     // Declaring parameters
@@ -78,6 +82,7 @@ public:
     this->declare_parameter<double>("devPitch", 0.1);
     this->declare_parameter<double>("devYaw", 0.1);
     this->declare_parameter<bool>("sendTransform", false);
+    this->declare_parameter<bool>("oldHw", false);
 
     // Reading parameters
     this->get_parameter("wheelDiameter", wheelDiameter);
@@ -90,6 +95,7 @@ public:
     this->get_parameter("devPitch", devPitch);
     this->get_parameter("devYaw", devYaw);
     this->get_parameter("sendTransform", sendTransform);
+    this->get_parameter("oldHw", depreceatedHw);
   }
 
   int init()
@@ -115,6 +121,9 @@ private:
     trajectory_msgs::msg::JointTrajectory traj;
     kin->execInvKin(twist, traj);
     topicPub_DriveCommands->publish(traj);
+    last_twist.linear.x = twist->linear.x;
+    last_twist.linear.y = twist->linear.y;
+    last_twist.angular.z = twist->angular.z;
   }
 
   void sendOdom(const sensor_msgs::msg::JointState::SharedPtr js)
@@ -152,20 +161,46 @@ private:
       odom_trans.transform.rotation = odom.pose.pose.orientation;
       odom_broadcaster->sendTransform(odom_trans);
     }
+    if (!depreceatedHw) {
+      // setting the kinematic state
+      kinematicsState.is_moving = false;
+
+      kinematicsState.is_vel_cmd = false;
+      if (last_twist.linear.x != 0 ||
+        last_twist.linear.y != 0 ||
+        last_twist.angular.z != 0)
+      {
+        kinematicsState.is_vel_cmd = true;
+      }
+
+      if(odom.twist.twist.linear.x != 0 ||
+        odom.twist.twist.linear.y != 0 ||
+        odom.twist.twist.angular.z != 0)
+      {
+        kinematicsState.is_moving = true;
+      }
+      topicPub_KinematicsState->publish(kinematicsState);
+    }
   }
 
 private:
   std::mutex m_node_mutex;
   Mecanum4WKinematics * kin = 0;
   bool sendTransform = false;
+  bool depreceatedHw = false;
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr topicPub_Odometry;
   rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr topicPub_DriveCommands;
+  rclcpp::Publisher<neo_msgs2::msg::KinematicsState>::SharedPtr topicPub_KinematicsState;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr topicSub_ComVel;
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr topicSub_DriveState;
   std::shared_ptr<tf2_ros::TransformBroadcaster> odom_broadcaster;
+  geometry_msgs::msg::Twist last_twist;
+
   double wheelDiameter, axisWidth, axisLength;
   double devX, devY, devZ, devRoll, devPitch, devYaw;
   OdomPose pose;
+
+  neo_msgs2::msg::KinematicsState kinematicsState;
 };
 
 int main(int argc, char ** argv)
