@@ -173,9 +173,9 @@ private:
         kinematicsState.is_vel_cmd = true;
       }
 
-      if(odom.twist.twist.linear.x != 0 ||
-        odom.twist.twist.linear.y != 0 ||
-        odom.twist.twist.angular.z != 0)
+    if (std::abs(odom.twist.twist.linear.x) >= 1e-3 ||
+        std::abs(odom.twist.twist.linear.y) >= 1e-3 ||
+        std::abs(odom.twist.twist.angular.z) >= 1e-3)
       {
         kinematicsState.is_moving = true;
       }
