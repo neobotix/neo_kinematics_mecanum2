@@ -36,7 +36,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include "../include/MecanumKinematics.h"
-#include "tf2_ros/transform_broadcaster.h"
+#include "tf2_ros/transform_broadcaster.hpp"
 #include "geometry_msgs/msg/quaternion.hpp"
 
 Mecanum4WKinematics::Mecanum4WKinematics()
