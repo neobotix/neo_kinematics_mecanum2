@@ -1,59 +1,67 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 project(neo_kinematics_mecanum2)
+
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
+find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(neo_msgs2 REQUIRED)
 
-# ###########
-# ## Build ##
-# ###########
-
-ament_export_dependencies(std_msgs tf nav_msgs sensor_msgs)
-
-ament_export_include_directories(common/include)
-
 add_library(${PROJECT_NAME} common/src/Mecanum4WKinematics.cpp)
-
-ament_export_libraries(${PROJECT_NAME})
-
-add_executable(neo_mecanum_node ros/src/neo_kinematics_mecanum_node.cpp)
-
-ament_target_dependencies(${PROJECT_NAME}
-  rclcpp
-  tf2_ros
-  tf2_geometry_msgs
-  sensor_msgs
-  geometry_msgs
-  std_msgs
-  nav_msgs
-  neo_msgs2
-  trajectory_msgs)
-
-target_link_libraries(neo_mecanum_node ${PROJECT_NAME})
-
-install(DIRECTORY common/include/
-   DESTINATION common/include/
+target_include_directories(${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  rclcpp::rclcpp
+  geometry_msgs::geometry_msgs
+  nav_msgs::nav_msgs
+  sensor_msgs::sensor_msgs
+  std_msgs::std_msgs
+  trajectory_msgs::trajectory_msgs
+  tf2::tf2
+  tf2_ros::tf2_ros
+  tf2_geometry_msgs::tf2_geometry_msgs
+  neo_msgs2::neo_msgs2
 )
 
-install(TARGETS neo_mecanum_node
-DESTINATION lib/${PROJECT_NAME}
-	)
+add_executable(neo_mecanum_node ros/src/neo_kinematics_mecanum_node.cpp)
+target_link_libraries(neo_mecanum_node PRIVATE ${PROJECT_NAME})
 
-install(DIRECTORY launch
-  	
-  DESTINATION share/${PROJECT_NAME})
+install(TARGETS ${PROJECT_NAME} EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+install(TARGETS neo_mecanum_node DESTINATION lib/${PROJECT_NAME})
+install(DIRECTORY common/include/ DESTINATION include/${PROJECT_NAME})
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+ament_export_include_directories(include/${PROJECT_NAME})
+ament_export_libraries(${PROJECT_NAME})
+ament_export_dependencies(
+  rclcpp
+  geometry_msgs
+  nav_msgs
+  sensor_msgs
+  std_msgs
+  trajectory_msgs
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
+  neo_msgs2
+)
 ament_package()

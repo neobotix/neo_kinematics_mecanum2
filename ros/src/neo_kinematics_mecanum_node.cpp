@@ -38,6 +38,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <neo_msgs2/msg/kinematics_state.hpp>
@@ -58,10 +59,17 @@ public:
     topicPub_Odometry = this->create_publisher<nav_msgs::msg::Odometry>("odom", 1000);
     topicPub_DriveCommands = this->create_publisher<trajectory_msgs::msg::JointTrajectory>(
       "drives/joint_trajectory", 1000);
-    topicSub_ComVel = this->create_subscription<geometry_msgs::msg::Twist>(
+    if (this->declare_parameter<bool>("enable_stamped_cmd_vel", true)) {
+      topicSub_ComVel_stamped = this->create_subscription<geometry_msgs::msg::TwistStamped>(
+        "cmd_vel", 1, [this](geometry_msgs::msg::TwistStamped::SharedPtr message) {
+          receiveCmd(std::make_shared<geometry_msgs::msg::Twist>(message->twist));
+        });
+    } else {
+      topicSub_ComVel = this->create_subscription<geometry_msgs::msg::Twist>(
       "cmd_vel",
       1,
       std::bind(&NeoMecanumNode::receiveCmd, this, _1));
+    }
     topicSub_DriveState = this->create_subscription<sensor_msgs::msg::JointState>(
       "drives/joint_states",
       10,
@@ -69,7 +77,7 @@ public:
     topicPub_KinematicsState = this->create_publisher<neo_msgs2::msg::KinematicsState>(
       "kinematics_state",
       1);
-    odom_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+    odom_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(*this);
 
     // Declaring parameters
     this->declare_parameter<double>("wheelDiameter", 0.3);
@@ -192,6 +200,7 @@ private:
   rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr topicPub_DriveCommands;
   rclcpp::Publisher<neo_msgs2::msg::KinematicsState>::SharedPtr topicPub_KinematicsState;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr topicSub_ComVel;
+  rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr topicSub_ComVel_stamped;
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr topicSub_DriveState;
   std::shared_ptr<tf2_ros::TransformBroadcaster> odom_broadcaster;
   geometry_msgs::msg::Twist last_twist;
